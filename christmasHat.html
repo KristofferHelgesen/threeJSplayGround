@@ -17,17 +17,26 @@
   <body>
     <div>
       <button onClick="startGame()">PLAY</button>
-      <button onClick="pauseGame()" >PAUSE</button>
+      <button onClick="pauseGame()">PAUSE</button>
+
+      <button onClikc="move('left')">left</button>
+
+      <button onClikc="move('right')">right</button>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+    <script src="./threeLib/build/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
-
+     <script src="threeLib/examples/js/controls/OrbitControls.js"></script>
     <script>
+      function move(){
 
-
+      }
       let gamePlays = false;
       var scene = new THREE.Scene();
+      var renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setClearColor("#e5e5e5");
 
+   
+      //Camera
       var camera = new THREE.PerspectiveCamera(
         75,
         window.innerWidth / window.innerHeight,
@@ -36,8 +45,6 @@
       );
       camera.position.z = 20; //If larger number, longer avay
 
-      var renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setClearColor("#e5e5e5");
 
       renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -53,19 +60,20 @@
       var rayCaster = new THREE.Raycaster();
       var mouse = new THREE.Vector2();
 
-      //This is our sphere
+      //Sphere
       var geometry = new THREE.SphereBufferGeometry(1, 20, 20);
       var material = new THREE.MeshLambertMaterial({ color: "white" });
       var box = new THREE.Mesh(geometry, material);
       box.position.y = 5;
-      //Torus
 
+      //Torus
       var geometry = new THREE.TorusGeometry(5, 0.5, 16, 100);
       var material = new THREE.MeshBasicMaterial({ color: "white" });
       var torus = new THREE.Mesh(geometry, material);
       torus.rotation.x = 55;
       torus.position.y = -5;
 
+      //Cone
       var geometry = new THREE.ConeGeometry(5, 10, 20);
       var material = new THREE.MeshLambertMaterial({ color: "red" });
       var cone = new THREE.Mesh(geometry, material);
@@ -76,6 +84,7 @@
       cone.add(box);
       scene.add(cone);
 
+ 
       //Adds light to the scene
       var light = new THREE.PointLight("0xffffff", 2, 1000);
       light.position.set(0, 0, 100);
@@ -85,10 +94,13 @@
       var render = function () {
         requestAnimationFrame(render);
 
-        gamePlays ? cone.rotation.x += 0.01  : null; //makes it rotate on its x axsis
+        gamePlays ? (cone.rotation.x += 0.01) : null; //makes it rotate on its x axsis
+    
         renderer.render(scene, camera);
+       
+      
       };
-
+      var controls = new THREE.OrbitControls( camera , renderer.domElement);
       /*var timer = setInterval(timerFunction ,3000)
       var timerFunction = () => {  
           clearInterval(timer);
@@ -99,7 +111,6 @@
         };*/
 
       function onMouseClick(event) {
-        
         this.tl.to(this.cone.scale, 1, { x: 2, ease: Expo.easeOut });
         this.tl.to(this.cone.scale, 1, { x: 0.5, ease: Expo.easeOut });
         this.tl.to(this.cone.scale, 1, { x: 2, ease: Expo.easeOut });
@@ -115,7 +126,7 @@
           const element = intersects[i];
           console.log(element.object);
 
-          element.object.material.color.set(0xff0000);
+          //element.object.material.color.set(0xff0000);
         }
       }
       render();
@@ -123,14 +134,13 @@
       //Starts the animation in paused mode
       this.tl = new TimelineMax({ paused: true });
       function pauseGame() {
-        gamePlays = false
+        gamePlays = false;
         this.tl.pause();
-
       }
       function startGame() {
         gamePlays = true;
-        this.tl.resume()
-        }
+        this.tl.resume();
+      }
 
       window.addEventListener("click", onMouseClick);
     </script>
